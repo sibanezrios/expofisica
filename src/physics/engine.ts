@@ -177,9 +177,7 @@ export function calculateTrainVelocity(variables: PhysicsVariables): number {
  * MOVIMIENTO INFINITO: El vagón permanece en el centro y el fondo se mueve
  */
 export function updateSimulation(
-  variables: PhysicsVariables,
-  currentState: SimulationState,
-  deltaTime: number
+  variables: PhysicsVariables
 ): SimulationState {
   // Calcular nueva altura de levitación
   const levitationHeight = calculateLevitationHeight(variables);

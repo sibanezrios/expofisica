@@ -21,15 +21,10 @@ function App() {
 
   // Actualizar simulación cada frame
   useEffect(() => {
-    let lastTime = Date.now();
     let animationFrameId: number;
 
     const animate = () => {
-      const currentTime = Date.now();
-      const deltaTime = (currentTime - lastTime) / 1000; // convertir a segundos
-      lastTime = currentTime;
-
-      setState((prevState) => updateSimulation(variables, prevState, deltaTime));
+      setState(updateSimulation(variables));
       animationFrameId = requestAnimationFrame(animate);
     };
 
