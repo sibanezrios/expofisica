@@ -293,7 +293,8 @@ function drawRailsLinear(
 
   // Dibujar imanes con offset para movimiento infinito
   const magnetSpacing = variables.magnetDistance * scale;
-  const magnetSize = 12;
+  // Escalar el tamaño del imán basado en la escala del canvas (mínimo 12px, máximo 24px)
+  const magnetSize = Math.max(12, Math.min(24, 1.5 * scale));
   
   // Calcular cuántos imanes necesitamos para llenar la pantalla + buffer
   const totalMagnets = Math.ceil(railEndX / magnetSpacing) + 2;
@@ -310,15 +311,17 @@ function drawRailsLinear(
     ctx.fillRect(x - magnetSize / 2, upperRailY - magnetSize / 2 - 3, magnetSize, magnetSize / 2);
     
     ctx.strokeStyle = COLORS.border;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = Math.max(1, scale * 0.1);
     ctx.strokeRect(x - magnetSize / 2, upperRailY - magnetSize - 3, magnetSize, magnetSize);
     
-    // Etiquetas
+    // Etiquetas con tamaño de fuente escalado (mínimo 8px, máximo 14px)
+    const fontSize = Math.max(8, Math.min(14, magnetSize * 0.6));
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 7px Inter, sans-serif';
+    ctx.font = `bold ${fontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('N', x, upperRailY - 9);
-    ctx.fillText('S', x, upperRailY - 3);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('N', x, upperRailY - magnetSize * 0.75);
+    ctx.fillText('S', x, upperRailY - magnetSize * 0.25);
     
     // Imán inferior (Polo Sur hacia arriba - hacia el vagón)
     ctx.fillStyle = COLORS.southPole;
@@ -329,8 +332,8 @@ function drawRailsLinear(
     ctx.strokeRect(x - magnetSize / 2, lowerRailY + 3, magnetSize, magnetSize);
     
     ctx.fillStyle = 'white';
-    ctx.fillText('S', x, lowerRailY + 9);
-    ctx.fillText('N', x, lowerRailY + 14);
+    ctx.fillText('S', x, lowerRailY + 3 + magnetSize * 0.25);
+    ctx.fillText('N', x, lowerRailY + 3 + magnetSize * 0.75);
   }
 }
 
@@ -375,11 +378,14 @@ function drawTrainLinear(
   ctx.lineWidth = 2;
   ctx.strokeRect(x - trainWidth / 2, y - trainHeight / 2, trainWidth, trainHeight);
 
-  // Imanes del vagón
-  const magnetWidth = 10;
-  const magnetHeight = 8;
+  // Imanes del vagón - escalados proporcionalmente (mínimo 10px, máximo 18px)
+  const magnetWidth = Math.max(10, Math.min(18, 1.2 * scale));
+  const magnetHeight = Math.max(8, Math.min(14, 1.0 * scale));
   const magnetX1 = x - trainWidth / 4;
   const magnetX2 = x + trainWidth / 4;
+  
+  // Tamaño de fuente escalado para los imanes del vagón (mínimo 7px, máximo 12px)
+  const trainMagnetFontSize = Math.max(7, Math.min(12, magnetHeight * 0.5));
   
   // Imanes superiores (Polo Sur hacia arriba)
   const magnetTopY = y - trainHeight / 2 - magnetHeight;
@@ -391,14 +397,15 @@ function drawTrainLinear(
     ctx.fillRect(mx - magnetWidth / 2, magnetTopY + magnetHeight / 2, magnetWidth, magnetHeight / 2);
     
     ctx.strokeStyle = COLORS.border;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = Math.max(1, scale * 0.1);
     ctx.strokeRect(mx - magnetWidth / 2, magnetTopY, magnetWidth, magnetHeight);
     
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 6px Inter, sans-serif';
+    ctx.font = `bold ${trainMagnetFontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('S', mx, magnetTopY + 4);
-    ctx.fillText('N', mx, magnetTopY + magnetHeight - 1);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('S', mx, magnetTopY + magnetHeight * 0.25);
+    ctx.fillText('N', mx, magnetTopY + magnetHeight * 0.75);
   });
   
   // Imanes inferiores (Polo Sur hacia abajo)
@@ -413,17 +420,19 @@ function drawTrainLinear(
     ctx.strokeRect(mx - magnetWidth / 2, magnetBottomY, magnetWidth, magnetHeight);
     
     ctx.fillStyle = 'white';
-    ctx.fillText('N', mx, magnetBottomY + 4);
-    ctx.fillText('S', mx, magnetBottomY + magnetHeight - 1);
+    ctx.fillText('N', mx, magnetBottomY + magnetHeight * 0.25);
+    ctx.fillText('S', mx, magnetBottomY + magnetHeight * 0.75);
   });
 
-  // Indicador de dirección
+  // Indicador de dirección - tamaño escalado
   if (state.isLevitating && state.actualSpeed > 0) {
     ctx.fillStyle = COLORS.forceLinePositive;
-    ctx.font = 'bold 14px Arial';
+    const arrowFontSize = Math.max(12, Math.min(20, 2 * scale));
+    ctx.font = `bold ${arrowFontSize}px Arial`;
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     const arrow = variables.motorDirection > 0 ? '→' : '←';
-    ctx.fillText(arrow, x, y - trainHeight - 10);
+    ctx.fillText(arrow, x, y - trainHeight - arrowFontSize);
   }
 }
 
