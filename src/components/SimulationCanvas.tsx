@@ -48,10 +48,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Obtener el ancho del contenedor padre para hacer el canvas responsive
+    const containerWidth = canvas.parentElement?.clientWidth || 800;
+    
+    // Calcular la proporción del canvas (80cm ancho / 30cm alto = 2.67:1)
+    const aspectRatio = BOARD_SIZE.width / BOARD_SIZE.height;
+    const displayWidth = containerWidth;
+    const displayHeight = containerWidth / aspectRatio;
+    
     // Ajustar canvas para pantallas de alta resolución (Retina/4K)
     const dpr = window.devicePixelRatio || 1;
-    const displayWidth = BOARD_SIZE.width * 12;
-    const displayHeight = BOARD_SIZE.height * 12;
     
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
@@ -60,8 +66,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     
     ctx.scale(dpr, dpr);
 
-    // Escala para convertir cm a píxeles (12 píxeles = 1 cm)
-    const scale = 12;
+    // Escala dinámica basada en el ancho del contenedor
+    const scale = displayWidth / BOARD_SIZE.width;
     
     const draw = () => {
       const currentTime = Date.now();
@@ -98,10 +104,30 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     draw();
 
+    // Listener para redimensionar el canvas cuando cambie el tamaño de la ventana
+    const handleResize = () => {
+      if (!canvas) return;
+      const containerWidth = canvas.parentElement?.clientWidth || 800;
+      const aspectRatio = BOARD_SIZE.width / BOARD_SIZE.height;
+      const newDisplayWidth = containerWidth;
+      const newDisplayHeight = containerWidth / aspectRatio;
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = newDisplayWidth * dpr;
+      canvas.height = newDisplayHeight * dpr;
+      canvas.style.width = `${newDisplayWidth}px`;
+      canvas.style.height = `${newDisplayHeight}px`;
+      
+      ctx.scale(dpr, dpr);
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      window.removeEventListener('resize', handleResize);
     };
   }, [variables, state, backgroundOffset]);
 

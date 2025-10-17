@@ -67,6 +67,6 @@ export const DEFAULT_VARIABLES: PhysicsVariables = {
 };
 
 export const BOARD_SIZE: BoardDimensions = {
-  width: 50,   // 50 cm
+  width: 80,   // 80 cm (más ancho para aprovechar el espacio)
   height: 30,  // 30 cm
 };
