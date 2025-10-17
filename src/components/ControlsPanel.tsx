@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import type { PhysicsVariables } from '../types';
+import type { PhysicsVariables, MagnetType } from '../types';
+import { MAGNET_PROPERTIES } from '../types';
 import { Tooltip } from './Tooltip';
 import './ControlsPanel.css';
 
@@ -15,6 +16,7 @@ interface ControlsPanelProps {
 
 // Textos de ayuda para cada variable
 const TOOLTIPS = {
+  magnetType: 'Tipo de material magnético. Cada tipo tiene diferentes propiedades de fuerza y rango.',
   magneticForce: 'Representa la fuerza de repulsión vertical que genera cada imán. Mayor valor = más capacidad de levitar.',
   trainMass: 'Afecta el peso total del vagón. Si el peso supera la fuerza magnética, no habrá levitación.',
   railSeparation: 'Distancia entre las dos hileras de imanes. Muy grande = campo débil; muy pequeño = menor estabilidad.',
@@ -30,10 +32,25 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onReset,
 }) => {
   const handleChange = (key: keyof PhysicsVariables, value: number | string) => {
-    let parsedValue: number | 1 | -1;
+    let parsedValue: number | 1 | -1 | MagnetType;
     
     if (key === 'motorDirection') {
       parsedValue = value === '1' ? 1 : -1;
+    } else if (key === 'magnetType') {
+      parsedValue = value as MagnetType;
+      // Ajustar automáticamente la fuerza magnética al valor por defecto del nuevo tipo de imán
+      const newMagnetProps = MAGNET_PROPERTIES[parsedValue];
+      
+      // SIEMPRE usar el valor por defecto del nuevo tipo de imán
+      // Esto asegura que la fuerza neta cambie de forma visible
+      const newForce = newMagnetProps.forceRange.default;
+      
+      onVariablesChange({
+        ...variables,
+        magnetType: parsedValue,
+        magneticForce: newForce,
+      });
+      return;
     } else {
       parsedValue = parseFloat(value as string);
       if (isNaN(parsedValue)) return;
@@ -45,9 +62,36 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
     });
   };
 
+  // Obtener propiedades del imán actual
+  const currentMagnetProps = MAGNET_PROPERTIES[variables.magnetType];
+
   return (
     <div className="controls-panel">
       <h2>⚙️ Panel de Control</h2>
+      
+      {/* Selector de Tipo de Imán */}
+      <div className="control-group">
+        <label htmlFor="magnetType">
+          <span className="label-text">
+            Tipo de Imán
+            <Tooltip text={TOOLTIPS.magnetType} multiline />
+          </span>
+          <span className="value-display magnet-type-display">{currentMagnetProps.name}</span>
+        </label>
+        <select
+          id="magnetType"
+          value={variables.magnetType}
+          onChange={(e) => handleChange('magnetType', e.target.value)}
+          className="magnet-type-select"
+        >
+          {Object.entries(MAGNET_PROPERTIES).map(([key, props]) => (
+            <option key={key} value={key}>
+              {props.name}
+            </option>
+          ))}
+        </select>
+        <p className="magnet-description">{currentMagnetProps.description}</p>
+      </div>
       
       <div className="control-group">
         <label htmlFor="magneticForce">
@@ -60,16 +104,16 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <input
           id="magneticForce"
           type="range"
-          min="0.5"
-          max="10"
+          min={currentMagnetProps.forceRange.min}
+          max={currentMagnetProps.forceRange.max}
           step="0.1"
           value={variables.magneticForce}
           onChange={(e) => handleChange('magneticForce', e.target.value)}
         />
         <input
           type="number"
-          min="0.5"
-          max="10"
+          min={currentMagnetProps.forceRange.min}
+          max={currentMagnetProps.forceRange.max}
           step="0.1"
           value={variables.magneticForce}
           onChange={(e) => handleChange('magneticForce', e.target.value)}

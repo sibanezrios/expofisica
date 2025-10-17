@@ -84,7 +84,7 @@ body {
 .app-footer {
   text-align: center;
   color: var(--text-muted);
-  padding: 24px;
+  padding: 16px 24px;
   background: rgba(15, 23, 42, 0.4);
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.1);
@@ -106,6 +106,13 @@ body {
   color: #64748B;
   opacity: 0.7;
   margin-top: 4px;
+}
+
+.powered-by {
+  font-size: 14px !important;
+  color: #94A3B8;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* Responsive Design - estilo Tesla/Apple */

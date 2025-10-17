@@ -74,11 +74,8 @@ function App() {
       <InfoPanel />
 
       <footer className="app-footer">
-        <p>
-          Desarrollado para físicos, estudiantes y entusiastas de la electromecánica
-        </p>
-        <p className="tech-stack">
-          React + TypeScript | Física Simplificada | Simulación en Tiempo Real
+        <p className="powered-by">
+          Powered by: Esteban Fontanilla • Javid Vergel • Sara Ibáñez • Heyner Martínez
         </p>
       </footer>
     </div>

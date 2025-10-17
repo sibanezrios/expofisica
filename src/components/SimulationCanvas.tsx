@@ -346,13 +346,12 @@ function drawTrainLinear(
 ) {
   const x = state.positionX * scale;
   const centerY = (BOARD_SIZE.height / 2) * scale;
-  const railSeparation = variables.railSeparation * scale;
   
   // Calcular posición Y según levitación
-  // Si no levita, está en el fondo (lowerRail)
-  const baseY = state.isLevitating 
-    ? centerY
-    : centerY + railSeparation / 2 - 10; // Pegado al riel inferior
+  // Ajustamos la posición base para que visualmente el vagón esté centrado entre los imanes
+  // Compensamos con un offset pequeño para mejor apariencia visual
+  const visualOffset = 3; // Pequeño ajuste hacia abajo para centrado visual perfecto
+  const baseY = centerY + visualOffset;
   
   const y = baseY - (state.levitationHeight * scale);
   

@@ -87,7 +87,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onEnter }) => {
         </button>
 
         <p className="welcome-footer">
-          Diseñado para físicos, ingenieros y estudiantes
+          Powered by: Esteban Fontanilla • Javid Vergel • Sara Ibáñez • Heyner Martínez
         </p>
       </div>
 
