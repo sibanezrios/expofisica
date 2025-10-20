@@ -304,11 +304,20 @@ function drawRailsLinear(
     
     if (x < -magnetSize || x > railEndX + magnetSize) continue;
     
-    // Imán superior (Polo Sur hacia abajo - hacia el vagón)
-    ctx.fillStyle = COLORS.northPole;
-    ctx.fillRect(x - magnetSize / 2, upperRailY - magnetSize - 3, magnetSize, magnetSize / 2);
-    ctx.fillStyle = COLORS.southPole;
-    ctx.fillRect(x - magnetSize / 2, upperRailY - magnetSize / 2 - 3, magnetSize, magnetSize / 2);
+    // ═══════════════════════════════════════════════════════════
+    // ✅ CONFIGURACIÓN MAGLEV: IMANES ALTERNADOS
+    // Carril superior: S-N-S-N-S-N...
+    // Carril inferior: N-S-N-S-N-S...
+    // ═══════════════════════════════════════════════════════════
+    
+    // Carril superior: S cuando i es par, N cuando i es impar
+    const upperIsNorth = i % 2 !== 0;
+    const upperPoleColor = upperIsNorth ? COLORS.northPole : COLORS.southPole;
+    const upperPoleLabel = upperIsNorth ? 'N' : 'S';
+    
+    // Imán superior del riel
+    ctx.fillStyle = upperPoleColor;
+    ctx.fillRect(x - magnetSize / 2, upperRailY - magnetSize - 3, magnetSize, magnetSize);
     
     ctx.strokeStyle = COLORS.border;
     ctx.lineWidth = Math.max(1, scale * 0.1);
@@ -320,20 +329,21 @@ function drawRailsLinear(
     ctx.font = `bold ${fontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('N', x, upperRailY - magnetSize * 0.75);
-    ctx.fillText('S', x, upperRailY - magnetSize * 0.25);
+    ctx.fillText(upperPoleLabel, x, upperRailY - magnetSize / 2 - 3);
     
-    // Imán inferior (Polo Sur hacia arriba - hacia el vagón)
-    ctx.fillStyle = COLORS.southPole;
-    ctx.fillRect(x - magnetSize / 2, lowerRailY + 3, magnetSize, magnetSize / 2);
-    ctx.fillStyle = COLORS.northPole;
-    ctx.fillRect(x - magnetSize / 2, lowerRailY + 3 + magnetSize / 2, magnetSize, magnetSize / 2);
+    // Carril inferior: N cuando i es par, S cuando i es impar (opuesto al superior)
+    const lowerIsNorth = i % 2 === 0;
+    const lowerPoleColor = lowerIsNorth ? COLORS.northPole : COLORS.southPole;
+    const lowerPoleLabel = lowerIsNorth ? 'N' : 'S';
+    
+    // Imán inferior del riel
+    ctx.fillStyle = lowerPoleColor;
+    ctx.fillRect(x - magnetSize / 2, lowerRailY + 3, magnetSize, magnetSize);
     
     ctx.strokeRect(x - magnetSize / 2, lowerRailY + 3, magnetSize, magnetSize);
     
     ctx.fillStyle = 'white';
-    ctx.fillText('S', x, lowerRailY + 3 + magnetSize * 0.25);
-    ctx.fillText('N', x, lowerRailY + 3 + magnetSize * 0.75);
+    ctx.fillText(lowerPoleLabel, x, lowerRailY + 3 + magnetSize / 2);
   }
 }
 
@@ -387,14 +397,23 @@ function drawTrainLinear(
   // Tamaño de fuente escalado para los imanes del vagón (mínimo 7px, máximo 12px)
   const trainMagnetFontSize = Math.max(7, Math.min(12, magnetHeight * 0.5));
   
-  // Imanes superiores (Polo Sur hacia arriba)
+  // ═══════════════════════════════════════════════════════════
+  // ✅ IMANES DEL VAGÓN:
+  // Fila arriba: N (izq), S (der)
+  // Fila abajo: S (izq), N (der)
+  // ═══════════════════════════════════════════════════════════
+  
+  // Imanes superiores del vagón: N (izq), S (der)
   const magnetTopY = y - trainHeight / 2 - magnetHeight;
   
-  [magnetX1, magnetX2].forEach(mx => {
-    ctx.fillStyle = COLORS.southPole;
-    ctx.fillRect(mx - magnetWidth / 2, magnetTopY, magnetWidth, magnetHeight / 2);
-    ctx.fillStyle = COLORS.northPole;
-    ctx.fillRect(mx - magnetWidth / 2, magnetTopY + magnetHeight / 2, magnetWidth, magnetHeight / 2);
+  [magnetX1, magnetX2].forEach((mx, idx) => {
+    // idx 0 = izquierda = N, idx 1 = derecha = S
+    const isNorthPole = idx === 0;
+    const poleColor = isNorthPole ? COLORS.northPole : COLORS.southPole;
+    const poleLabel = isNorthPole ? 'N' : 'S';
+    
+    ctx.fillStyle = poleColor;
+    ctx.fillRect(mx - magnetWidth / 2, magnetTopY, magnetWidth, magnetHeight);
     
     ctx.strokeStyle = COLORS.border;
     ctx.lineWidth = Math.max(1, scale * 0.1);
@@ -404,24 +423,25 @@ function drawTrainLinear(
     ctx.font = `bold ${trainMagnetFontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('S', mx, magnetTopY + magnetHeight * 0.25);
-    ctx.fillText('N', mx, magnetTopY + magnetHeight * 0.75);
+    ctx.fillText(poleLabel, mx, magnetTopY + magnetHeight / 2);
   });
   
-  // Imanes inferiores (Polo Sur hacia abajo)
+  // Imanes inferiores del vagón: S (izq), N (der)
   const magnetBottomY = y + trainHeight / 2;
   
-  [magnetX1, magnetX2].forEach(mx => {
-    ctx.fillStyle = COLORS.northPole;
-    ctx.fillRect(mx - magnetWidth / 2, magnetBottomY, magnetWidth, magnetHeight / 2);
-    ctx.fillStyle = COLORS.southPole;
-    ctx.fillRect(mx - magnetWidth / 2, magnetBottomY + magnetHeight / 2, magnetWidth, magnetHeight / 2);
+  [magnetX1, magnetX2].forEach((mx, idx) => {
+    // idx 0 = izquierda = S, idx 1 = derecha = N
+    const isNorthPole = idx === 1;
+    const poleColor = isNorthPole ? COLORS.northPole : COLORS.southPole;
+    const poleLabel = isNorthPole ? 'N' : 'S';
+    
+    ctx.fillStyle = poleColor;
+    ctx.fillRect(mx - magnetWidth / 2, magnetBottomY, magnetWidth, magnetHeight);
     
     ctx.strokeRect(mx - magnetWidth / 2, magnetBottomY, magnetWidth, magnetHeight);
     
     ctx.fillStyle = 'white';
-    ctx.fillText('N', mx, magnetBottomY + magnetHeight * 0.25);
-    ctx.fillText('S', mx, magnetBottomY + magnetHeight * 0.75);
+    ctx.fillText(poleLabel, mx, magnetBottomY + magnetHeight / 2);
   });
 
   // Indicador de dirección - tamaño escalado

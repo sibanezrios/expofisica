@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import './InfoPanel.css';
+import { MagnetVisualization } from './MagnetVisualization';
 
 export const InfoPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -84,6 +85,11 @@ export const InfoPanel: React.FC = () => {
                   <li className="success">✅ Si la fuerza neta es positiva, el vagón se eleva.</li>
                   <li className="error">❌ Si la fuerza neta es negativa o cero, el vagón permanece en el suelo.</li>
                 </ul>
+              </section>
+
+              <section className="info-section">
+                <h3>🔬 Visualización de Configuración Magnética:</h3>
+                <MagnetVisualization />
               </section>
 
               <section className="info-section">
